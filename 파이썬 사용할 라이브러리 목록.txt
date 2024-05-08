@@ -1,0 +1,28 @@
+pymysql
+파이썬에서 mysql을 인식하게 하기 위한 라이브러리입니다.
+
+pymupdf
+PDF 파일 작업을 위한 포괄적인 도구 세트를 제공하는 오픈 소스 Python 라이브러리입니다.
+
+python-docx
+MS 워드 파일을 다루기 위해 사용하는 라이브러리입니다. 
+
+python-pptx
+MS ppt 파일을 다루기 위해 사용하는 라이브러리입니다.
+
+os
+운영체제와 상호작용하는 다양한 기능을 제공하는 라이브러리입니다. 
+listdir : 폴더 안의 파일 이름을 list화 하는 명령어다. 
+사용 방법
+file_list_variable_name = os.listdir('경로')
+
+csv
+csv 파일을 다루는 것
+
+엑셀을 다루는 다양한 라이브러리들
+
+Pandas
+
+OpenPyXL
+
+xlrd
