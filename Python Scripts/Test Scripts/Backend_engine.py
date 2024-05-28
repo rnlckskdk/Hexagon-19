@@ -1,10 +1,15 @@
-import os
+import sys, os
 from PyPDF2 import PdfReader # pip install PyPDF2
 import docx2txt # pip install docx2txt
 import openai
 import time
 import olefile
 from pptx import Presentation
+import Database
+
+
+#입력
+
 """
 처음으로 개발해야 하는 것은 
 타겟 폴더를 입력받았을 때
@@ -169,13 +174,15 @@ def openaiAPI(data):
     )
     return response
 
+
 # 모든 하위폴더를 탐색하는 코드
 # 사용 결과 => dirpath, dirnames, filenames
 # 파일의 위치를 정확히 알아야 하는가? yes
 # 무엇이 필요한가? 
 # 확장자명, 
 # completions 리스트 사용
-def explore_the_path(folder_path):
+def explore_the_path(folder_path, db):
+    print("in path")
     ai_result = ""
     temp_paths = []
     for (root, dirs, files) in os.walk(folder_path):
@@ -187,8 +194,10 @@ def explore_the_path(folder_path):
                     RD = f.read() # read
                     # txt에서 text 추출 완료
                     ai_result = openaiAPI(RD)
-                    print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
-
+                    keywords_text = ai_result.choices[0].message.content
+                    keywords_list = [line.split(". ", 1)[1].strip() for line in keywords_text.strip().split("\n") if ". " in line]
+                    db.insertFileInfo(root, file, keywords_list)
+                    # print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
 
                 elif file.endswith('pdf'):
                     RD = PdfReader(os.path.join(root,file)) # PdfReader로 파일 읽어오기
@@ -199,21 +208,29 @@ def explore_the_path(folder_path):
                         page_data += one_page
                     # pdf에서 text 추출 완료
                     ai_result = openaiAPI(page_data)
-                    print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
-                    
+                    keywords_text = ai_result.choices[0].message.content
+                    keywords_list = [line.split(". ", 1)[1].strip() for line in keywords_text.strip().split("\n") if ". " in line]
+                    db.insertFileInfo(root, file, keywords_list)
+                    # print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
 
                 elif file.endswith('docx') and not file.startswith('~$'):
                     text = docx2txt.process(os.path.join(root,file))
                     # word에서 text 추출 완료
                     ai_result = openaiAPI(text)
-                    print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
+                    keywords_text = ai_result.choices[0].message.content
+                    keywords_list = [line.split(". ", 1)[1].strip() for line in keywords_text.strip().split("\n") if ". " in line]
+                    db.insertFileInfo(root, file, keywords_list)
+                    # print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
 
                 elif file.endswith('hwp'):
                     RD = olefile.OleFileIO(os.path.join(root,file))
                     encoded_text = RD.openstream('PrvText').read()
                     decoded_text = encoded_text.decode('utf-16')
                     ai_result = openaiAPI(decoded_text)
-                    print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
+                    keywords_text = ai_result.choices[0].message.content
+                    keywords_list = [line.split(". ", 1)[1].strip() for line in keywords_text.strip().split("\n") if ". " in line]
+                    db.insertFileInfo(root, file, keywords_list)
+                    # print("파일경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
 
                 elif file.endswith('pptx'):
                     RD = Presentation(os.path.join(root,file))
@@ -227,8 +244,13 @@ def explore_the_path(folder_path):
                                     text_runs.append(run.text)
                     combined_text = "\n".join(text_runs)
                     ai_result = openaiAPI(combined_text)
-                    print("폴더경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
-
+                    keywords_text = ai_result.choices[0].message.content
+                    keywords_list = [line.split(". ", 1)[1].strip() for line in keywords_text.strip().split("\n") if ". " in line]
+                    db.insertFileInfo(root, file, keywords_list)
+                    # print(keywords_text)
+                    # print("폴더경로 : ",root, "\n","파일이름 : ",file, "\n", ai_result.choices[0].message.content, sep="", end="\n\n")
+    
+    print("out path")
 
 """
 # db에 정보를 보내기
@@ -238,3 +260,5 @@ folder_path = 'C:\\Users\\최정현\\Desktop\\파일_읽기_ChatGPT'
 
 explore_the_path(folder_path)
 """
+if __name__ == "__main__":
+    explore_the_path("C:/Users/sj/Desktop/임시", None)
