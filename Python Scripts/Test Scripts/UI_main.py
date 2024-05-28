@@ -65,7 +65,6 @@ class App(QWidget):
         gridLayout.setColumnStretch(1, 1)
         gridLayout.setRowStretch(0, 1)
         
-
         # ui 설정
         self.setLayout(mainLayout)
         self.setupUI()
@@ -206,7 +205,7 @@ class App(QWidget):
 
         # 결과 받아 오기
         # Capstone_Backend.explore_the_path(self.currentDir, self.currentDB)
-        resultList = self.db.getFileInfoFromDB('') # serach all
+        resultList = self.db.pritnTable() # serach all
         ### row 업데이트 ###
         for i in range(0, len(resultList)):
             rowPosition = self.tableWidget.rowCount()
