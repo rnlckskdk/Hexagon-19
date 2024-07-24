@@ -4,11 +4,17 @@ QLineEdit, QSizePolicy, QPushButton, QTableWidget, QAbstractItemView, QHeaderVie
 from PyQt5.QtGui import QIcon, QDesktopServices, QScreen
 from PyQt5.QtCore import QUrl, Qt
 
+# sys.path.append("C:/Users/sj/Documents/GitHub/Hexagon-19/Python Scripts/Test Scripts")
+import Backend_engine
+import Database
+
 class SearchWindow(QWidget):
     def __init__(self):
         super().__init__()
         # 클래스 내에서 사용할 변수들
         self.keyword = ''
+        self.currentDir = ''
+        self.currentDB = None
         
         # 레이아웃 설정
         mainLayout = QVBoxLayout()
@@ -19,6 +25,7 @@ class SearchWindow(QWidget):
         
         # 검색어 입력창
         self.keywordLine = self.createLine('키워드 입력')
+        self.keywordLine.returnPressed.connect(self.updateResultBox)
         horizontalLayout.addWidget(self.keywordLine, 0, 0)
 
         # 검색 버튼
@@ -50,11 +57,6 @@ class SearchWindow(QWidget):
     def setupUI(self):
         title = '검색'
         self.setWindowTitle(title)
-<<<<<<< Updated upstream:Python Scripts/Test Scripts/UI/SearchWindow.py
-        width = 1600
-        height = 720
-        self.resize(width, height)
-=======
         # 해상도에 맞게 화면 설정
         screen = QApplication.primaryScreen()
         size = screen.size()
@@ -64,7 +66,6 @@ class SearchWindow(QWidget):
         window_height = int(height * 0.6)
         self.resize(window_width, window_height)
 
->>>>>>> Stashed changes:Python Scripts/Test Scripts/UI_SearchWindow.py
         self.setWindowIcon(QIcon('Icon2.png'))
         self.center()
 
@@ -77,7 +78,7 @@ class SearchWindow(QWidget):
             border-style: outset;
             border-width: 2px;
             border-radius: 10px;
-            border-color: black;
+            border-color: gray;
             font: bold 23px;
             min-width: 10em;
             padding: 6px;
@@ -88,7 +89,7 @@ class SearchWindow(QWidget):
             border-style: outset;
             border-width: 2px;
             border-radius: 10px;
-            border-color: black;
+            border-color: gray;
             font: bold 23px;
             min-width: 10em;
             padding: 6px;
@@ -115,7 +116,7 @@ class SearchWindow(QWidget):
 
     # 결과 창 생성 메소드
     def createResultTable(self):
-        columns = ['이름', '확장자', '용량', '경로']
+        columns = ['이름', '확장자', '경로', '키워드']
         self.tableWidget = QTableWidget()
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -132,11 +133,10 @@ class SearchWindow(QWidget):
     #################################
 
     def linkToLocalFile(self, row, column):
-        if column == 3:
+        if column == 2:
             item = self.tableWidget.item(row, column)
             if item:
                 url = item.data(Qt.DisplayRole)
-                #url = url.split('"')[1]
                 QDesktopServices.openUrl(QUrl.fromLocalFile(url))
 
     def updateResultBox(self):
@@ -146,19 +146,23 @@ class SearchWindow(QWidget):
         # 테이블 초기화/업데이트
         self.tableWidget.setRowCount(0)
 
+        # 결과 받아 오기
+        # Capstone_Backend.explore_the_path(self.currentDir, self.currentDB)
+        resultList = self.currentDB.getFileInfoFromDB(self.keyword)
         ### row 업데이트 ###
-        rowPosition = self.tableWidget.rowCount()
-        self.tableWidget.insertRow(rowPosition)
-        item = QTableWidgetItem('C:/Users/sj/Desktop/SCHOOL/3-2/지구화시대의 역tsdfa.txt')
-        self.tableWidget.setItem(rowPosition, 0, item)
-        self.tableWidget.setItem(rowPosition, 1, QTableWidgetItem('txt'))
-        self.tableWidget.setItem(rowPosition, 2, QTableWidgetItem('12489172847 Byte'))
-        self.tableWidget.setItem(rowPosition, 3, QTableWidgetItem("C:/Users/sj/Desktop/SCHOOL/3-2/지구화시대의 역사학과 한국사의 재조명/기말.txt"))
-        for i in range(1, 30):
+        for i in range(0, len(resultList)):
             rowPosition = self.tableWidget.rowCount()
             self.tableWidget.insertRow(rowPosition)
-            self.tableWidget.setItem(rowPosition, 0, QTableWidgetItem('dasdasdasfsdgds'))
+            self.tableWidget.setItem(rowPosition, 0, QTableWidgetItem(resultList[i][1])) # 이름
+            self.tableWidget.setItem(rowPosition, 1, QTableWidgetItem(resultList[i][2])) # 확장자
+            self.tableWidget.setItem(rowPosition, 2, QTableWidgetItem(resultList[i][0] + '/' + resultList[i][1] + '.' + resultList[i][2])) # 경로
+            self.tableWidget.setItem(rowPosition, 3, QTableWidgetItem(resultList[i][3])) # 태그
 
+    def setCurrentDir(self, dir):
+        self.currentDir = dir
+
+    def setDB(self, db):
+        self.currentDB = db
 
     
 if __name__ == '__main__':

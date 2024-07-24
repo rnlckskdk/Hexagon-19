@@ -2,9 +2,13 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QDesktopWidget, QSizePolicy, QProgressBar, QVBoxLayout)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
+import sqlite3
 
+import Backend_engine
+import Database
+
+# 쓰레드 관련한 것들은 db가 메모리가 아닌 특정 파일에 저장되어야 사용할 수 있음 (현재는 무시)
 class LoadingThread(QThread):
-    # 시험용
     progress = pyqtSignal(int)
 
     def run(self):
@@ -12,10 +16,32 @@ class LoadingThread(QThread):
             self.msleep(50) # 50밀리초마다 대기
             self.progress.emit(i)
 
+class WorkerThread(QThread):
+    finished = pyqtSignal()
+
+    def __init__(self, currentDir, currentDB):
+        super().__init__()
+        self.currentDir = currentDir
+        self.currentDB = currentDB
+
+    def run(self):
+        # 각 스레드마다 별도의 DB 연결을 생성합니다.
+        self.db_connection = sqlite3.connect(self.currentDB) # db 경로가 들어가야됨
+        try:
+            # Capstone_Backend 모듈의 함수가 DB 연결을 받도록 수정
+            Backend_engine.explore_the_path(self.currentDir, self.db_connection)
+        finally:
+            self.db_connection.close()
+        self.finished.emit()
 
 class ExtractWindow(QWidget):
+    update_signal = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
+        # 변수들
+        self.currentDir = ''
+        self.currentDB = None
 
         mainLayout = QVBoxLayout()
 
@@ -25,14 +51,10 @@ class ExtractWindow(QWidget):
         mainLayout.addWidget(self.progressBar)
 
         # 확인 버튼
-        self.btn = self.createButton('확인')
-        self.btn.clicked.connect(self.close)
+        self.btn = self.createButton('추출')
+        self.btn.clicked.connect(self.startExtract)
         mainLayout.addWidget(self.btn, alignment=Qt.AlignmentFlag.AlignHCenter)
-
-        # self.startLoading()
-        self.progressBar.setMinimum(0) # 무한 로딩
-        self.progressBar.setMaximum(0)
-
+        
         self.setLayout(mainLayout)
         self.setupUI()
 
@@ -66,7 +88,7 @@ class ExtractWindow(QWidget):
             border-style: outset;
             border-width: 2px;
             border-radius: 10px;
-            border-color: black;
+            border-color: gray;
             font: bold 23px;
             min-width: 10em;
             padding: 6px;
@@ -77,7 +99,7 @@ class ExtractWindow(QWidget):
             border-style: outset;
             border-width: 2px;
             border-radius: 10px;
-            border-color: black;
+            border-color: gray;
             font: bold 23px;
             min-width: 10em;
             padding: 6px;
@@ -88,8 +110,6 @@ class ExtractWindow(QWidget):
         btn.setStyleSheet(btnStyle)
         return btn
 
-<<<<<<< Updated upstream:Python Scripts/Test Scripts/UI/ExtractWindow.py
-=======
     #################################
     ##### 버튼 시그널 위한 메소드 #####
     #################################
@@ -119,27 +139,32 @@ class ExtractWindow(QWidget):
         # self.loadingThread.progress.connect(self.updateProgress)
         # self.loadingThread.start()
 
->>>>>>> Stashed changes:Python Scripts/Test Scripts/UI_ExtractWindow.py
     ###########################
     #####  로딩함수/시험용 #####
     ###########################
 
-    def startLoading(self):
-        self.btn.setEnabled(False)
-        self.thread = LoadingThread()
-        self.thread.progress.connect(self.updateProgress)
-        self.thread.start()
-        self.thread.finished.connect(self.loadingFinished)
-
     def updateProgress(self, value):
         self.progressBar.setValue(value)
 
-    def loadingFinished(self):
+    def onExtractFinished(self):
+        self.progressBar.setMaximum(100)  # 무한 로딩 종료
+        self.progressBar.setValue(100)
         self.btn.setEnabled(True)
+        self.btn.setText('확인')
+        self.btn.clicked.disconnect(self.startExtract)
+        self.btn.clicked.connect(self.close)
+        self.loadingThread.terminate()  # 로딩 스레드 종료
+    
 
-    ###########################
-    ##### 추출 함수들 호출 #####
-    ###########################
+    ####################
+    ##### 기타 함수 #####
+    ####################
+
+    def setCurrentDir(self, dir):
+        self.currentDir = dir
+
+    def setDB(self, db):
+        self.currentDB = db
 
 
     

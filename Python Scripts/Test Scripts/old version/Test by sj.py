@@ -3,9 +3,8 @@ from PyPDF2 import PdfReader
 import os
 
 # chat gpt api key 입력, 각자 본인 api key 사용
-client = OpenAI(api_key="api key 넣으면 됩니다")
 # 목표 폴더 경로, pdf와 텍스트 파일이 있는 임의의 폴더로 변경
-dir_path = "./samples"
+dir_path = "C:/Users/sj/Desktop/dfg"
 # 폴더 내 파일들 경로 저장 리스트
 file_paths = []
 # chatGPT와 통신 후 반환된 completion 객체 저장 리스트

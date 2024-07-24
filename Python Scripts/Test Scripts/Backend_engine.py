@@ -14,7 +14,7 @@ from pptx import Presentation
 # open ai api 이용
 
 # 여기에 키 들어감
-openai.api_key = 
+openai.api_key = ""
 
 def openaiAPI(data): 
     response = openai.chat.completions.create(
