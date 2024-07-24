@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QDesktopWidget, QVBoxLayout, QGridLayout, 
 QLineEdit, QSizePolicy, QPushButton, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem)
-from PyQt5.QtGui import QIcon, QDesktopServices
+from PyQt5.QtGui import QIcon, QDesktopServices, QScreen
 from PyQt5.QtCore import QUrl, Qt
 
 class SearchWindow(QWidget):
@@ -50,9 +50,21 @@ class SearchWindow(QWidget):
     def setupUI(self):
         title = '검색'
         self.setWindowTitle(title)
+<<<<<<< Updated upstream:Python Scripts/Test Scripts/UI/SearchWindow.py
         width = 1600
         height = 720
         self.resize(width, height)
+=======
+        # 해상도에 맞게 화면 설정
+        screen = QApplication.primaryScreen()
+        size = screen.size()
+        width = size.width()
+        height = size.height()
+        window_width = int(width * 0.9)
+        window_height = int(height * 0.6)
+        self.resize(window_width, window_height)
+
+>>>>>>> Stashed changes:Python Scripts/Test Scripts/UI_SearchWindow.py
         self.setWindowIcon(QIcon('Icon2.png'))
         self.center()
 

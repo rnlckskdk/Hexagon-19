@@ -88,6 +88,38 @@ class ExtractWindow(QWidget):
         btn.setStyleSheet(btnStyle)
         return btn
 
+<<<<<<< Updated upstream:Python Scripts/Test Scripts/UI/ExtractWindow.py
+=======
+    #################################
+    ##### 버튼 시그널 위한 메소드 #####
+    #################################
+
+    # 추출 버튼 시그널(추출 시작)
+    def startExtract(self):
+        Backend_engine.explore_the_path(self.currentDir, self.currentDB)
+        self.progressBar.setMinimum(0)  # 무한 로딩 시작
+        self.progressBar.setMaximum(0)
+
+        self.currentDB.deleteDuplicateData()
+
+        self.btn.setText('확인')
+        self.btn.clicked.disconnect(self.startExtract)
+        self.btn.clicked.connect(self.close)
+
+        self.update_signal.emit("updateResultBox")
+
+        # self.btn.setEnabled(False)
+        # 현재는 화면이 추출 중에 정지되는데 이를 해결하기 위한 쓰레드
+        # (쓰레드에서 쓸 db가 파일경로로 전달되어야 해서 현재 비활성화)
+        # self.thread = WorkerThread(self.currentDir, self.currentDB)
+        # self.thread.finished.connect(self.onExtractFinished)
+        # self.thread.start()
+
+        # self.loadingThread = LoadingThread()
+        # self.loadingThread.progress.connect(self.updateProgress)
+        # self.loadingThread.start()
+
+>>>>>>> Stashed changes:Python Scripts/Test Scripts/UI_ExtractWindow.py
     ###########################
     #####  로딩함수/시험용 #####
     ###########################
