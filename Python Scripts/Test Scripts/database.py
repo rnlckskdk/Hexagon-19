@@ -4,7 +4,7 @@ import os
 
 class DB():
     sql=""
-    # folderPath = r'/Users/hj/Library/Mobile Documents/com~apple~CloudDocs/24-1학기/인공지능/'                 # 탐색을 원하는 원하는 폴더 경로
+    # folderPath = # 탐색을 원하는 원하는 폴더 경로
 
     def __init__(self):
         self.conn = sqlite3.connect('./filedata.db')

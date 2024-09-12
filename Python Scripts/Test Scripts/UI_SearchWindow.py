@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PyQt5.QtWidgets import (QApplication, QWidget, QDesktopWidget, QVBoxLayout, QGridLayout, 
 QLineEdit, QSizePolicy, QPushButton, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem)
 from PyQt5.QtGui import QIcon, QDesktopServices, QScreen
@@ -66,7 +66,10 @@ class SearchWindow(QWidget):
         window_height = int(height * 0.6)
         self.resize(window_width, window_height)
 
-        self.setWindowIcon(QIcon('Icon2.png'))
+        # 아이콘 설정 / 상대경로
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, 'Icon2.png')
+        self.setWindowIcon(QIcon(icon_path))
         self.center()
 
     # 버튼 생성 메소드

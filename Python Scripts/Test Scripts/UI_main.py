@@ -1,13 +1,12 @@
-import sys
+import sys, os
 import UI_SearchWindow, UI_ExtractWindow
 # from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import (QApplication, QDesktopWidget, QGridLayout, QVBoxLayout, QPushButton, QSizePolicy, 
 QWidget, QLineEdit, QFileDialog, QMessageBox, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem)
-from PyQt5.QtGui import QIcon, QDesktopServices, QScreen
+from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtCore import Qt, QUrl
 
 # sys.path.append("C:/Users/sj/Documents/GitHub/Hexagon-19/Python Scripts/Test Scripts")
-import Backend_engine
 import Database
 
 
@@ -54,13 +53,13 @@ class App(QWidget):
         # 추출, 검색, 정리 버튼 생성 / 시그널 연결 / 레이아웃 설정
         extractBtn = self.createButton('추출')
         searchBtn = self.createButton('검색')
-        organizeBtn = self.createButton('정리')
+        # organizeBtn = self.createButton('정리')
         extractBtn.clicked.connect(self.openExtractWindow)
         searchBtn.clicked.connect(self.openSearchWindow)
         # organizeBtn.clicked.connect()
         menuLayout.addWidget(extractBtn)
         menuLayout.addWidget(searchBtn)
-        menuLayout.addWidget(organizeBtn)
+        # menuLayout.addWidget(organizeBtn)
         menuLayout.addStretch(1)
     
         # 레이아웃에 공간 추가
@@ -95,7 +94,10 @@ class App(QWidget):
         window_height = int(height * 0.7)
         self.resize(window_width, window_height)
 
-        self.setWindowIcon(QIcon('Icon2.png'))
+        # 아이콘 설정 / 상대경로
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, 'Icon2.png')
+        self.setWindowIcon(QIcon(icon_path))
         self.center()
         self.show()
 
@@ -159,9 +161,16 @@ class App(QWidget):
         columns = ['이름', '확장자', '경로', '키워드']
         self.tableWidget = QTableWidget()
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        # 횡 스크롤 설정
+        self.tableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)  # 픽셀 단위 스크롤
+        self.tableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 스크롤바 항상 켜짐
+        #self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        # tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+    
+        # 세로 헤더 숨김
         self.tableWidget.verticalHeader().setVisible(False)
+
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setHorizontalHeaderLabels(columns)
         self.tableWidget.cellClicked.connect(self.linkToLocalFile)
