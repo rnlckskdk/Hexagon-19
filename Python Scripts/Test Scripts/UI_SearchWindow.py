@@ -5,8 +5,6 @@ from PyQt5.QtGui import QIcon, QDesktopServices, QScreen
 from PyQt5.QtCore import QUrl, Qt
 
 # sys.path.append("C:/Users/sj/Documents/GitHub/Hexagon-19/Python Scripts/Test Scripts")
-import Backend_engine
-import Database
 
 class SearchWindow(QWidget):
     def __init__(self):
@@ -151,6 +149,9 @@ class SearchWindow(QWidget):
 
         # 결과 받아 오기
         # Capstone_Backend.explore_the_path(self.currentDir, self.currentDB)
+        # 횡 스크롤 설정
+        self.tableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)  # 픽셀 단위 스크롤
+        self.tableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # 스크롤바 항상 켜짐
         resultList = self.currentDB.getFileInfoFromDB(self.keyword)
         ### row 업데이트 ###
         for i in range(0, len(resultList)):

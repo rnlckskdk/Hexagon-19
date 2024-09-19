@@ -14,8 +14,7 @@ class DB():
         self.cur.execute(sql)	# 커서로 sql문 실행 여기까지
 
     # db에 파일 정보 및 태그 저장
-    def insertFileInfo(self, root, name, tag, size) :
-        # filename = name.split('.')[0]
+    def insertFileInfo(self, path, name, tag, size) :
         fileextension = name.split('.')[-1]
         filename = name[0:len(name) - len(fileextension) - 1]
         
@@ -23,8 +22,12 @@ class DB():
         for i in tag :
             if i == tag[0] : pass
             else : tags += ", " + i
-        sql = "INSERT INTO fileTable VALUES('" + root + "','" + filename + "','" + fileextension + "','" + tags + "','" + size + "')"	# sql변수에 INSERT SQL문 입력
-        self.cur.execute(sql)	# 커서로sql 실행
+        
+        print(filename)
+        # sql = "INSERT INTO fileTable VALUES('" + root + "','" + filename + "','" + fileextension + "','" + tags + "','" + size + "')"	# sql변수에 INSERT SQL문 입력
+        # self.cur.execute(sql)	# 커서로sql 실행
+        sql = "INSERT INTO fileTable (path, name, extensionName, tags, fileSize) VALUES (?, ?, ?, ?, ?)"
+        self.cur.execute(sql, (path, filename, fileextension, tags, size))
 
     def getFileInfoFromDB(self, keyword):
         likeKeyword = '%{0}%'.format(keyword)
