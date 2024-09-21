@@ -1,10 +1,8 @@
 import sqlite3 
-import os
 
 
 class DB():
     sql=""
-    # folderPath = # 탐색을 원하는 원하는 폴더 경로
 
     def __init__(self):
         self.conn = sqlite3.connect('./filedata.db')
@@ -24,15 +22,13 @@ class DB():
             else : tags += ", " + i
         
         print(filename)
-        # sql = "INSERT INTO fileTable VALUES('" + root + "','" + filename + "','" + fileextension + "','" + tags + "','" + size + "')"	# sql변수에 INSERT SQL문 입력
-        # self.cur.execute(sql)	# 커서로sql 실행
         sql = "INSERT INTO fileTable (path, name, extensionName, tags, fileSize) VALUES (?, ?, ?, ?, ?)"
         self.cur.execute(sql, (path, filename, fileextension, tags, size))
 
     def getFileInfoFromDB(self, keyword):
         likeKeyword = '%{0}%'.format(keyword)
-        query = 'SELECT * FROM fileTable WHERE tags LIKE ?' # ?는 플레이스 홀더로 likeKeyword로 대체
-        temp = list(self.cur.execute(query, (likeKeyword,)))
+        query = 'SELECT * FROM fileTable WHERE tags LIKE ? or name LIKE ?' # ?는 플레이스 홀더로 likeKeyword로 대체
+        temp = list(self.cur.execute(query, (likeKeyword, likeKeyword,)))
         # self.conn.commit()
         return temp
 
@@ -52,7 +48,6 @@ class DB():
     def deleteDuplicateData(self) :
         self.conn.execute("DELETE FROM fileTable as A WHERE A.ROWID > (SELECT MIN(B.ROWID) FROM fileTable B WHERE A.path = B.path AND A.name = B.name AND A.extensionName = B.extensionName AND A.fileSize = B.fileSize)")
         self.conn.commit()
-
         
     # 테이블 내용을 모두 출력하는 메소드
     def pritnTable(self) :

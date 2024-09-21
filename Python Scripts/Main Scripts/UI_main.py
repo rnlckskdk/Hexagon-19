@@ -1,12 +1,9 @@
 import sys, os
 import UI_SearchWindow, UI_ExtractWindow
-# from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import (QApplication, QDesktopWidget, QGridLayout, QVBoxLayout, QPushButton, QSizePolicy, 
 QWidget, QLineEdit, QFileDialog, QMessageBox, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem)
 from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtCore import Qt, QUrl
-
-# sys.path.append("C:/Users/sj/Documents/GitHub/Hexagon-19/Python Scripts/Test Scripts")
 import Database
 
 
@@ -18,14 +15,9 @@ class App(QWidget):
         # 전체 클래스 내에서 사용할 변수들
         self.currentDir = ''
         self.searchWindow = UI_SearchWindow.SearchWindow()
-        # self.extractWindow = UI_ExtractWindow.ExtractWindow()
         self.extractWindow = None
         self.db = Database.DB()
         self.searchWindow.setDB(self.db)
-        
-
-        # 결과창 업데이트 위한 시그널 연결(추출 창으로부터)
-        # self.extractWindow.update_signal.connect(self.updateResultBox)
 
         # 레이아웃 설정
         gridLayout = QGridLayout()
@@ -53,13 +45,13 @@ class App(QWidget):
         # 추출, 검색, 정리 버튼 생성 / 시그널 연결 / 레이아웃 설정
         extractBtn = self.createButton('추출')
         searchBtn = self.createButton('검색')
-        # organizeBtn = self.createButton('정리')
+        initializeBtn = self.createButton('초기화(시연용)') # 시연용 db 삭제 버튼 = 초기화
         extractBtn.clicked.connect(self.openExtractWindow)
         searchBtn.clicked.connect(self.openSearchWindow)
-        # organizeBtn.clicked.connect()
+        initializeBtn.clicked.connect(self.db.deleteTable)
         menuLayout.addWidget(extractBtn)
         menuLayout.addWidget(searchBtn)
-        # menuLayout.addWidget(organizeBtn)
+        menuLayout.addWidget(initializeBtn)
         menuLayout.addStretch(1)
     
         # 레이아웃에 공간 추가

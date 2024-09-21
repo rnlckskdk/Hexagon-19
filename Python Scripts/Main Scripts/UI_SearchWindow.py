@@ -1,10 +1,9 @@
 import sys, os
 from PyQt5.QtWidgets import (QApplication, QWidget, QDesktopWidget, QVBoxLayout, QGridLayout, 
 QLineEdit, QSizePolicy, QPushButton, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem)
-from PyQt5.QtGui import QIcon, QDesktopServices, QScreen
+from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtCore import QUrl, Qt
 
-# sys.path.append("C:/Users/sj/Documents/GitHub/Hexagon-19/Python Scripts/Test Scripts")
 
 class SearchWindow(QWidget):
     def __init__(self):
